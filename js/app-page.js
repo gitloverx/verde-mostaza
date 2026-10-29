@@ -16,6 +16,7 @@ let editingIngredientFbId = null;
 let editingProductId = null, editingProductRecipe = [];
 let editingSale = null;
 let calYear = new Date().getFullYear(), calMonth = new Date().getMonth(), selDate = null;
+let showIngredientSelector = false;
 let audioCtx = null;
 try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
 
