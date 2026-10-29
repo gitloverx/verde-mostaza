@@ -16,7 +16,7 @@ body{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .urgent-pulse{animation:urgentPulse 1.5s infinite}
 </style>
 </head>
-<body class="bg-stone-100 text-stone-800 font-sans h-screen flex flex-col md:flex-row overflow-hidden select-none">
+<body class="bg-stone-100 text-stone-800 font-sans min-h-screen flex flex-col md:h-screen md:flex-row md:overflow-hidden select-none">
 
 <div id="loading" class="fixed inset-0 bg-stone-100 flex flex-col items-center justify-center z-50">
 <div class="w-14 h-14 bg-amber-500 text-white rounded-2xl flex items-center justify-center text-2xl animate-pulse"><i class="fa-solid fa-seedling"></i></div>
@@ -65,7 +65,7 @@ body{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
         </div>
     </header>
 
-    <main class="flex-1 overflow-y-auto p-3 md:p-6 pb-24 md:pb-6 w-full max-w-7xl mx-auto">
+    <main class="flex-1 p-3 md:p-6 pb-28 md:pb-6 w-full max-w-7xl mx-auto md:overflow-y-auto">
         
         <div id="view-cajero" class="space-y-4 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
             <div class="md:col-span-7 lg:col-span-8 space-y-4">
