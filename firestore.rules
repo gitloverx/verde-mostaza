@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn()  { return request.auth != null; }
+    function isOwner(uid)  { return isSignedIn() && request.auth.uid == uid; }
+    function isSuperAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/super_admins/$(request.auth.uid));
+    }
+
+    // Super admins: solo escritura desde la consola
+    match /super_admins/{uid} {
+      allow read:  if isSignedIn() && (request.auth.uid == uid || isSuperAdmin());
+      allow write: if false;
+    }
+
+    // Perfil + subcolecciones (multi-tenant real)
+    match /users/{uid} {
+      allow read:   if isOwner(uid) || isSuperAdmin();
+      allow create: if isOwner(uid)
+                    && request.resource.data.email == request.auth.token.email
+                    && request.resource.data.onboarded == false;
+      allow update: if isOwner(uid) || isSuperAdmin();
+      allow delete: if isOwner(uid);
+
+      // Subcolecciones (menu, orders, inventory): solo el dueño
+      match /{collection}/{docId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // Contadores globales
+    match /stats/global {
+      allow read:   if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['totalUsers', 'totalOrders', 'total
