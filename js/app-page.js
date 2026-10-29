@@ -514,7 +514,7 @@ window.closeProductModal = () => { document.getElementById('product-modal').clas
 
 function renderProductRecipe() {
 const c = document.getElementById('product-modal-recipe');
-if (!inventory.length) { c.innerHTML = '<p class="text-stone-400 text-xs py-2 text-center col-span-full">No hay ingredientes creados. Ve a Inventario para crearlos.</p>'; return; }
+if (!inventory.length) { c.innerHTML = '<p class="text-stone-400 text-xs py-2 text-center col-span-full">No hay ingredientes creados.</p>'; return; }
 const sortedInventory = [...inventory].sort((a, b) => {
     const aQty = editingProductRecipe.find(r => r.ingredientId === a.id)?.qty || 0;
     const bQty = editingProductRecipe.find(r => r.ingredientId === b.id)?.qty || 0;
@@ -532,7 +532,6 @@ c.innerHTML = sortedInventory.map(ing => {
     ${isActive ? `<button onclick="updateRecipeQty(${ing.id}, 0)" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-xmark text-sm"></i></button>` : `<div class="w-6"></div>`}
     </div>
     </div>`;
-}).join('');
 }).join('');
 }
 
