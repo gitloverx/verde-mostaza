@@ -527,7 +527,7 @@ let html = recipeIngs.map(ing => `
         <div class="flex items-center gap-2">
             <input type="number" min="1" value="${ing.qty}" onchange="updateRecipeQty(${ing.id},this.value)" class="w-16 text-center text-sm font-bold bg-stone-50 border border-stone-200 rounded-lg py-1 focus:outline-none focus:border-amber-600">
             <span class="text-[10px] text-stone-400 w-6">${ing.unit}</span>
-            <button onclick="removeRecipeQty(${ing.id})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-xmark text-sm"></i></button>
+            <button type="button" onclick="removeRecipeQty(${ing.id})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-xmark text-sm"></i></button>
         </div>
     </div>
 `).join('');
@@ -566,21 +566,7 @@ window.addRecipeQty = (ingId) => {
 window.removeRecipeQty = (ingId) => {
     editingProductRecipe = editingProductRecipe.filter(r => r.ingredientId !== ingId);
     renderProductRecipe();
-};);
-c.innerHTML = sortedInventory.map(ing => {
-    const found = editingProductRecipe.find(r => r.ingredientId === ing.id);
-    const qty = found ? found.qty : 0;
-    const isActive = qty > 0;
-    return `<div class="flex justify-between items-center bg-white p-2 rounded-lg border ${isActive ? 'border-amber-400 shadow-sm' : 'border-stone-200 opacity-70'} transition-all">
-    <span class="text-xs font-semibold text-stone-700 truncate ${isActive ? 'text-stone-900' : ''}">${ing.name}</span>
-    <div class="flex items-center gap-2">
-    <input type="number" min="0" value="${qty}" onchange="updateRecipeQty(${ing.id},this.value)" class="w-16 text-center text-sm font-bold bg-stone-50 border border-stone-200 rounded-lg py-1 focus:outline-none focus:border-amber-600">
-    <span class="text-[10px] text-stone-400 w-6">${ing.unit}</span>
-    ${isActive ? `<button onclick="updateRecipeQty(${ing.id}, 0)" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-xmark text-sm"></i></button>` : `<div class="w-6"></div>`}
-    </div>
-    </div>`;
-}).join('');
-}
+};
 
 window.updateRecipeQty = (ingId, val) => {
     const q = parseInt(val) || 0;
