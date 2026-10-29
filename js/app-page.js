@@ -505,6 +505,7 @@ title.textContent = 'Nuevo Producto';
 name.value = ''; desc.value = ''; price.value = 10000; icon.value = 'fa-solid fa-hotdog';
 del.classList.add('hidden');
 }
+showIngredientSelector = false;
 renderProductRecipe();
 modal.classList.remove('hidden');
 setTimeout(() => name.focus(), 150);
@@ -515,11 +516,57 @@ window.closeProductModal = () => { document.getElementById('product-modal').clas
 function renderProductRecipe() {
 const c = document.getElementById('product-modal-recipe');
 if (!inventory.length) { c.innerHTML = '<p class="text-stone-400 text-xs py-2 text-center col-span-full">No hay ingredientes creados.</p>'; return; }
-const sortedInventory = [...inventory].sort((a, b) => {
-    const aQty = editingProductRecipe.find(r => r.ingredientId === a.id)?.qty || 0;
-    const bQty = editingProductRecipe.find(r => r.ingredientId === b.id)?.qty || 0;
-    return bQty - aQty;
-});
+const recipeIngs = editingProductRecipe.map(r => {
+    const ing = inventory.find(i => i.id === r.ingredientId);
+    return ing ? { ...ing, qty: r.qty } : null;
+}).filter(Boolean);
+const availableIngs = inventory.filter(i => !editingProductRecipe.some(r => r.ingredientId === i.id));
+let html = recipeIngs.map(ing => `
+    <div class="flex justify-between items-center bg-white p-2 rounded-lg border border-amber-400 shadow-sm mb-2 transition-all">
+        <span class="text-xs font-semibold text-stone-900 truncate">${ing.name}</span>
+        <div class="flex items-center gap-2">
+            <input type="number" min="1" value="${ing.qty}" onchange="updateRecipeQty(${ing.id},this.value)" class="w-16 text-center text-sm font-bold bg-stone-50 border border-stone-200 rounded-lg py-1 focus:outline-none focus:border-amber-600">
+            <span class="text-[10px] text-stone-400 w-6">${ing.unit}</span>
+            <button onclick="removeRecipeQty(${ing.id})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-xmark text-sm"></i></button>
+        </div>
+    </div>
+`).join('');
+if (recipeIngs.length === 0) {
+    html += `<p class="text-stone-400 text-xs py-2 text-center">Este producto no usa ingredientes.</p>`;
+}
+if (availableIngs.length > 0) {
+    html += `<div class="mt-3 border-t border-stone-200 pt-3">
+        <button type="button" onclick="toggleIngredientSelector()" class="text-xs font-bold text-amber-600 hover:text-amber-700 flex items-center gap-1 w-full justify-center py-2 bg-amber-50 rounded-lg">
+            <i class="fa-solid fa-plus"></i> Añadir ingrediente
+        </button>
+        <div id="ingredient-selector" class="${showIngredientSelector ? 'mt-2 space-y-1 max-h-40 overflow-y-auto' : 'hidden'}">
+            ${availableIngs.map(ing => `
+                <button type="button" onclick="addRecipeQty(${ing.id})" class="w-full text-left text-xs bg-stone-50 hover:bg-stone-100 p-2 rounded flex justify-between items-center">
+                    <span>${ing.name}</span>
+                    <i class="fa-solid fa-plus text-stone-400"></i>
+                </button>
+            `).join('')}
+        </div>
+    </div>`;
+}
+c.innerHTML = html;
+}
+
+window.toggleIngredientSelector = () => {
+    showIngredientSelector = !showIngredientSelector;
+    renderProductRecipe();
+};
+
+window.addRecipeQty = (ingId) => {
+    editingProductRecipe.push({ ingredientId: ingId, qty: 1 });
+    showIngredientSelector = false;
+    renderProductRecipe();
+};
+
+window.removeRecipeQty = (ingId) => {
+    editingProductRecipe = editingProductRecipe.filter(r => r.ingredientId !== ingId);
+    renderProductRecipe();
+};);
 c.innerHTML = sortedInventory.map(ing => {
     const found = editingProductRecipe.find(r => r.ingredientId === ing.id);
     const qty = found ? found.qty : 0;
@@ -539,7 +586,7 @@ window.updateRecipeQty = (ingId, val) => {
     const q = parseInt(val) || 0;
     const idx = editingProductRecipe.findIndex(r => r.ingredientId === ingId);
     if (q <= 0) { if (idx >= 0) editingProductRecipe.splice(idx,1); }
-    else { if (idx >= 0) editingProductRecipe[idx].qty = q; else editingProductRecipe.push({ ingredientId: ingId, qty: q }); }
+    else { if (idx >= 0) editingProductRecipe[idx].qty = q; }
     renderProductRecipe();
 };
 
