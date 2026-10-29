@@ -514,24 +514,34 @@ window.closeProductModal = () => { document.getElementById('product-modal').clas
 
 function renderProductRecipe() {
 const c = document.getElementById('product-modal-recipe');
-if (!inventory.length) { c.innerHTML = '<p class="text-stone-400 text-xs py-2 text-center col-span-full">No hay ingredientes creados.</p>'; return; }
-c.innerHTML = inventory.map(ing => {
-const found = editingProductRecipe.find(r => r.ingredientId === ing.id);
-return `<div class="flex justify-between items-center bg-white p-2 rounded-lg border border-stone-200">
-<span class="text-xs font-semibold text-stone-700 truncate">${ing.name}</span>
-<div class="flex items-center gap-1">
-<input type="number" min="0" value="${found?found.qty:0}" data-ingid="${ing.id}" oninput="updateRecipeQty(${ing.id},this.value)" class="w-16 text-center text-xs font-bold bg-stone-50 border border-stone-200 rounded-lg py-1 focus:outline-none focus:border-amber-600">
-<span class="text-[10px] text-stone-400 w-8">${ing.unit}</span>
-</div>
-</div>`;
+if (!inventory.length) { c.innerHTML = '<p class="text-stone-400 text-xs py-2 text-center col-span-full">No hay ingredientes creados. Ve a Inventario para crearlos.</p>'; return; }
+const sortedInventory = [...inventory].sort((a, b) => {
+    const aQty = editingProductRecipe.find(r => r.ingredientId === a.id)?.qty || 0;
+    const bQty = editingProductRecipe.find(r => r.ingredientId === b.id)?.qty || 0;
+    return bQty - aQty;
+});
+c.innerHTML = sortedInventory.map(ing => {
+    const found = editingProductRecipe.find(r => r.ingredientId === ing.id);
+    const qty = found ? found.qty : 0;
+    const isActive = qty > 0;
+    return `<div class="flex justify-between items-center bg-white p-2 rounded-lg border ${isActive ? 'border-amber-400 shadow-sm' : 'border-stone-200 opacity-70'} transition-all">
+    <span class="text-xs font-semibold text-stone-700 truncate ${isActive ? 'text-stone-900' : ''}">${ing.name}</span>
+    <div class="flex items-center gap-2">
+    <input type="number" min="0" value="${qty}" onchange="updateRecipeQty(${ing.id},this.value)" class="w-16 text-center text-sm font-bold bg-stone-50 border border-stone-200 rounded-lg py-1 focus:outline-none focus:border-amber-600">
+    <span class="text-[10px] text-stone-400 w-6">${ing.unit}</span>
+    ${isActive ? `<button onclick="updateRecipeQty(${ing.id}, 0)" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-xmark text-sm"></i></button>` : `<div class="w-6"></div>`}
+    </div>
+    </div>`;
+}).join('');
 }).join('');
 }
 
 window.updateRecipeQty = (ingId, val) => {
-const q = parseInt(val) || 0;
-const idx = editingProductRecipe.findIndex(r => r.ingredientId === ingId);
-if (q <= 0) { if (idx >= 0) editingProductRecipe.splice(idx,1); }
-else { if (idx >= 0) editingProductRecipe[idx].qty = q; else editingProductRecipe.push({ ingredientId: ingId, qty: q }); }
+    const q = parseInt(val) || 0;
+    const idx = editingProductRecipe.findIndex(r => r.ingredientId === ingId);
+    if (q <= 0) { if (idx >= 0) editingProductRecipe.splice(idx,1); }
+    else { if (idx >= 0) editingProductRecipe[idx].qty = q; else editingProductRecipe.push({ ingredientId: ingId, qty: q }); }
+    renderProductRecipe();
 };
 
 window.saveProduct = async () => {
