@@ -30,6 +30,8 @@ uid = user.uid;
 profile = prof;
 applyTheme(prof.theme);
 document.getElementById('biz-name').textContent = (prof.businessName || 'MI NEGOCIO').toUpperCase();
+const deskName = document.getElementById('biz-name-desk');
+if (deskName) deskName.textContent = (prof.businessName || 'MI NEGOCIO').toUpperCase();
 document.getElementById('loading').classList.add('hidden');
 document.getElementById('main-app').classList.remove('hidden');
 attachListeners();
@@ -43,6 +45,8 @@ rose: 'bg-rose-600'
 };
 const bg = themes[theme] || themes.mustard;
 document.getElementById('brand-icon').className = `${bg} text-white w-8 h-8 rounded-xl flex items-center justify-center text-sm`;
+const deskIcon = document.getElementById('brand-icon-desk');
+if (deskIcon) deskIcon.className = `${bg} text-white w-10 h-10 rounded-xl flex items-center justify-center text-lg`;
 }
 
 function attachListeners() {
@@ -73,8 +77,15 @@ refresh();
 
 function setSyncOk() {
 const el = document.getElementById('sync-indicator');
+if (el) {
 el.title = 'Conectado';
 el.innerHTML = '<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>';
+}
+const deskEl = document.getElementById('sync-indicator-desk');
+if (deskEl) {
+deskEl.title = 'Conectado';
+deskEl.innerHTML = '<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>';
+}
 }
 
 async function seedDefaultMenu() {
@@ -101,11 +112,17 @@ currentRole = role;
 ['cajero','cocinero','inventario','admin'].forEach(r => {
 document.getElementById(`view-${r}`).classList.add('hidden');
 document.getElementById(`nav-btn-${r}`).className = "flex flex-col items-center gap-1 text-stone-400 hover:text-stone-700 transition";
+const d = document.getElementById(`desk-btn-${r}`);
+if (d) d.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-stone-400 hover:bg-stone-50 transition font-bold text-sm";
 });
 document.getElementById(`view-${role}`).classList.remove('hidden');
 document.getElementById(`nav-btn-${role}`).className = "flex flex-col items-center gap-1 text-amber-600 transition";
+const deskBtn = document.getElementById(`desk-btn-${role}`);
+if (deskBtn) deskBtn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-50 text-amber-600 transition font-bold text-sm";
 const labels = { cajero:'Caja', cocinero:'Cocina', inventario:'Inventario', admin:'Admin' };
 document.getElementById('active-role-label').textContent = labels[role];
+const deskTitle = document.getElementById('desktop-role-title');
+if (deskTitle) deskTitle.textContent = labels[role];
 refresh();
 };
 
@@ -170,15 +187,18 @@ const summary = document.getElementById('menu-prices-summary');
 if (!menuReady) { grid.innerHTML = '<p class="text-stone-400 text-xs py-3 text-center">Cargando menu...</p>'; return; }
 summary.textContent = `${menuItems.length} productos`;
 grid.innerHTML = menuItems.map(i => `
-<div onclick="addToCart(${i.id})" class="bg-white p-2.5 rounded-2xl border border-stone-200 active:scale-[0.99] transition flex items-center justify-between cursor-pointer">
-<div class="flex items-center gap-2.5">
-<div class="w-9 h-9 rounded-xl bg-stone-100 text-stone-800 flex items-center justify-center font-bold text-xs"><i class="${i.icon}"></i></div>
+<div onclick="addToCart(${i.id})" class="bg-white p-3 rounded-2xl border border-stone-200 active:scale-[0.99] transition flex items-center justify-between cursor-pointer shadow-sm hover:shadow-md">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-stone-100 text-stone-800 flex items-center justify-center font-bold text-sm"><i class="${i.icon}"></i></div>
 <div>
-<h4 class="font-bold text-xs text-stone-900">${i.name}</h4>
-<p class="text-[10px] text-stone-400 line-clamp-1">${i.desc || ''}</p>
+<h4 class="font-bold text-sm text-stone-900">${i.name}</h4>
+<p class="text-[11px] text-stone-400 line-clamp-1">${i.desc || ''}</p>
 </div>
 </div>
-<div class="text-right"><span class="font-black text-xs text-amber-600">$${i.price.toLocaleString()}</span><div class="text-[9px] text-stone-400 font-medium">+ Agregar</div></div>
+<div class="text-right">
+<span class="font-black text-sm text-amber-600">$${i.price.toLocaleString()}</span>
+<div class="text-[10px] text-stone-400 font-medium">+ Agregar</div>
+</div>
 </div>
 `).join('');
 }
@@ -206,12 +226,12 @@ if (!cart.length) { c.innerHTML = '<p class="text-stone-400 text-xs py-2 text-ce
 let total = 0;
 c.innerHTML = cart.map(it => {
 total += it.price * it.qty;
-return `<div class="flex justify-between items-center py-1">
-<span class="font-semibold text-xs text-stone-800">${it.name}</span>
+return `<div class="flex justify-between items-center py-1.5">
+<span class="font-semibold text-sm text-stone-800">${it.name}</span>
 <div class="flex items-center gap-2">
-<button onclick="updateCartQty(${it.id},-1)" class="w-5 h-5 bg-stone-100 rounded text-xs font-bold">-</button>
-<span class="text-xs font-bold w-4 text-center">${it.qty}</span>
-<button onclick="updateCartQty(${it.id},1)" class="w-5 h-5 bg-stone-100 rounded text-xs font-bold">+</button>
+<button onclick="updateCartQty(${it.id},-1)" class="w-6 h-6 bg-stone-100 hover:bg-stone-200 rounded text-sm font-bold">-</button>
+<span class="text-sm font-bold w-5 text-center">${it.qty}</span>
+<button onclick="updateCartQty(${it.id},1)" class="w-6 h-6 bg-stone-100 hover:bg-stone-200 rounded text-sm font-bold">+</button>
 </div>
 </div>`;
 }).join('');
@@ -281,7 +301,7 @@ const now = Date.now();
 c.innerHTML = orders.slice(0,5).map(o => {
 const e = o.timestamp ? now - o.timestamp : 0;
 const t = o.status !== 'listo' ? `<span data-timer="${o.firebaseId}" class="text-[10px] font-bold px-2 py-0.5 rounded-md border ${timerClass(e)}">${formatElapsed(e)}</span>` : '';
-return `<div class="flex justify-between items-center bg-stone-50 p-2 rounded-xl border border-stone-100 text-xs">
+return `<div class="flex justify-between items-center bg-stone-50 p-2.5 rounded-xl border border-stone-100 text-xs">
 <div class="min-w-0 flex-1">
 <div class="flex items-center gap-1.5 flex-wrap"><span class="font-bold text-stone-900">#${o.id} - ${o.customer}</span>${t}</div>
 <div class="text-[10px] text-stone-400 truncate">${(o.items||[]).map(i=>`${i.qty}x${i.name}`).join(', ')}</div>
@@ -301,24 +321,24 @@ const card = (o) => {
 const e = o.timestamp ? now - o.timestamp : 0;
 const min = e/60000;
 const border = o.status === 'listo' ? 'border-emerald-200 opacity-70' : min >= 15 ? 'border-rose-300' : min >= 10 ? 'border-orange-300' : min >= 5 ? 'border-amber-300' : 'border-stone-200';
-return `<div class="bg-white p-3 rounded-2xl shadow-xs border-2 ${border} space-y-2">
+return `<div class="bg-white p-4 rounded-2xl shadow-sm border-2 ${border} space-y-3">
 <div class="flex justify-between items-center gap-2">
-<span class="font-bold text-xs text-stone-900 truncate">#${o.id} - ${o.customer}</span>
+<span class="font-bold text-sm text-stone-900 truncate">#${o.id} - ${o.customer}</span>
 ${o.status !== 'listo' ? `<span data-timer="${o.firebaseId}" class="text-[10px] font-bold px-2 py-0.5 rounded-md border ${timerClass(e)}">${formatElapsed(e)}</span>` : `<span class="text-[10px] text-stone-400">${o.time}</span>`}
 </div>
-<div class="bg-stone-50 p-2 rounded-xl text-xs space-y-1">${(o.items||[]).map(i => `<div class="font-medium text-stone-800">- ${i.qty}x${i.name}</div>`).join('')}</div>
+<div class="bg-stone-50 p-3 rounded-xl text-sm space-y-1">${(o.items||[]).map(i => `<div class="font-medium text-stone-800">- ${i.qty}x${i.name}</div>`).join('')}</div>
 <div class="flex justify-between items-center pt-1">
 <span class="text-[10px] text-stone-400">${o.time}</span>
-<div class="flex gap-1.5">
-${o.status==='pendiente' ? `<button onclick="setStatus('${o.firebaseId}','preparacion')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold">Cocinar</button>` : ''}
-${o.status==='preparacion' ? `<button onclick="setStatus('${o.firebaseId}','listo')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold">Listo</button>` : ''}
+<div class="flex gap-2">
+${o.status==='pendiente' ? `<button onclick="setStatus('${o.firebaseId}','preparacion')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold">Cocinar</button>` : ''}
+${o.status==='preparacion' ? `<button onclick="setStatus('${o.firebaseId}','listo')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold">Listo</button>` : ''}
 ${o.status==='listo' ? `<span class="text-xs font-bold text-emerald-600">Entregado</span>` : ''}
 </div>
 </div>
 </div>`;
 };
-c.innerHTML = (activos.map(card).join('') || '<p class="text-stone-400 text-xs py-2 text-center">No hay pedidos en cocina</p>') +
-(listos.length ? '<div class="pt-2 text-[10px] font-bold text-stone-400 uppercase tracking-wider">Ultimos listos</div>' + listos.map(card).join('') : '');
+c.innerHTML = (activos.map(card).join('') || '<p class="text-stone-400 text-xs py-2 text-center col-span-full">No hay pedidos en cocina</p>') +
+(listos.length ? `<div class="pt-2 text-[10px] font-bold text-stone-400 uppercase tracking-wider col-span-full mt-4">Ultimos listos</div>` + listos.map(card).join('') : '');
 }
 
 window.setStatus = async (fbId, status) => {
@@ -327,22 +347,24 @@ try { await updateDoc(doc(ordersCol(), fbId), { status }); } catch(e) { console.
 
 function renderInventorySection() {
 const list = document.getElementById('inventory-list');
-if (!invReady) { list.innerHTML = '<p class="text-stone-400 text-xs py-3 text-center">Cargando inventario...</p>'; return; }
-if (!inventory.length) { list.innerHTML = '<p class="text-stone-400 text-xs py-3 text-center">No hay ingredientes.</p>'; return; }
+if (!invReady) { list.innerHTML = '<p class="text-stone-400 text-xs py-3 text-center col-span-full">Cargando inventario...</p>'; return; }
+if (!inventory.length) { list.innerHTML = '<p class="text-stone-400 text-xs py-3 text-center col-span-full">No hay ingredientes.</p>'; return; }
 list.innerHTML = inventory.map(i => {
 const low = i.stock <= 10;
-return `<div class="bg-white rounded-2xl p-3 shadow-xs border border-stone-200">
+return `<div class="bg-white rounded-2xl p-4 shadow-sm border border-stone-200">
+<div class="flex flex-col gap-3">
 <div class="flex items-center justify-between gap-2">
-<div class="flex items-center gap-2 min-w-0">
-<div class="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center"><i class="fa-solid fa-box text-stone-700 text-xs"></i></div>
-<div class="min-w-0"><h4 class="font-bold text-xs text-stone-900 truncate">${i.name}</h4><p class="text-[10px] text-stone-400">Stock: <span class="font-bold ${low?'text-rose-600':'text-stone-700'}">${i.stock} ${i.unit}</span></p></div>
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center"><i class="fa-solid fa-box text-stone-700 text-sm"></i></div>
+<div class="min-w-0"><h4 class="font-bold text-sm text-stone-900 truncate">${i.name}</h4><p class="text-[11px] text-stone-400">Stock: <span class="font-bold ${low?'text-rose-600':'text-stone-700'}">${i.stock} ${i.unit}</span></p></div>
+</div>
+<button onclick="openIngredientModal('${i.firebaseId}')" class="w-8 h-8 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs shrink-0"><i class="fa-solid fa-pen"></i></button>
 </div>
 <div class="flex items-center gap-1">
-<button onclick="adjustStock('${i.firebaseId}',-10)" class="w-8 h-8 bg-stone-100 hover:bg-stone-200 rounded-lg text-[11px] font-bold">-10</button>
-<button onclick="adjustStock('${i.firebaseId}',-1)" class="w-8 h-8 bg-stone-100 hover:bg-stone-200 rounded-lg text-xs font-bold">-1</button>
-<button onclick="adjustStock('${i.firebaseId}',1)" class="w-8 h-8 bg-stone-100 hover:bg-stone-200 rounded-lg text-xs font-bold">+1</button>
-<button onclick="adjustStock('${i.firebaseId}',10)" class="w-8 h-8 bg-stone-100 hover:bg-stone-200 rounded-lg text-[11px] font-bold">+10</button>
-<button onclick="openIngredientModal('${i.firebaseId}')" class="w-8 h-8 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs"><i class="fa-solid fa-pen"></i></button>
+<button onclick="adjustStock('${i.firebaseId}',-10)" class="flex-1 bg-stone-100 hover:bg-stone-200 rounded-lg text-xs font-bold py-1.5">-10</button>
+<button onclick="adjustStock('${i.firebaseId}',-1)" class="flex-1 bg-stone-100 hover:bg-stone-200 rounded-lg text-xs font-bold py-1.5">-1</button>
+<button onclick="adjustStock('${i.firebaseId}',1)" class="flex-1 bg-stone-100 hover:bg-stone-200 rounded-lg text-xs font-bold py-1.5">+1</button>
+<button onclick="adjustStock('${i.firebaseId}',10)" class="flex-1 bg-stone-100 hover:bg-stone-200 rounded-lg text-xs font-bold py-1.5">+10</button>
 </div>
 </div>
 </div>`;
@@ -359,7 +381,7 @@ p.recipe.forEach(r => { if (r.ingredientId && r.qty) usage[r.ingredientId] = (us
 const stats = document.getElementById('ingredient-usage-stats');
 stats.innerHTML = inventory.map(i => ({ name: i.name, unit: i.unit, qty: usage[i.id] || 0 }))
 .sort((a,b) => b.qty - a.qty)
-.map(u => `<div class="flex justify-between items-center bg-stone-50 p-2 rounded-lg text-xs border border-stone-100"><span class="font-semibold text-stone-700 truncate">${u.name}</span><span class="font-bold text-stone-900">${u.qty} ${u.unit}</span></div>`).join('') || '<p class="text-stone-400 text-xs py-2 text-center">Sin datos aun.</p>';
+.map(u => `<div class="flex justify-between items-center bg-stone-50 p-2.5 rounded-lg text-xs border border-stone-100"><span class="font-semibold text-stone-700 truncate">${u.name}</span><span class="font-bold text-stone-900">${u.qty} ${u.unit}</span></div>`).join('') || '<p class="text-stone-400 text-xs py-2 text-center col-span-full">Sin datos aun.</p>';
 }
 
 window.adjustStock = async (fbId, delta) => {
@@ -426,20 +448,20 @@ renderAdminMenu();
 
 function renderAdminMenu() {
 const c = document.getElementById('admin-menu-list');
-if (!menuReady) { c.innerHTML = '<p class="text-stone-400 text-xs py-2 text-center">Cargando...</p>'; return; }
+if (!menuReady) { c.innerHTML = '<p class="text-stone-400 text-xs py-2 text-center col-span-full">Cargando...</p>'; return; }
 c.innerHTML = menuItems.map(i => {
 const r = Array.isArray(i.recipe) && i.recipe.length
 ? i.recipe.map(x => { const ing = getIng(x.ingredientId); return ing ? `${x.qty} ${ing.unit} ${ing.name}` : null; }).filter(Boolean).join(' - ')
 : 'Sin receta';
-return `<div class="bg-stone-50 p-2.5 rounded-xl text-xs border border-stone-100">
+return `<div class="bg-stone-50 p-3 rounded-xl text-sm border border-stone-100">
 <div class="flex justify-between items-center gap-2">
 <div class="flex items-center gap-2 min-w-0">
-<div class="w-7 h-7 rounded-lg bg-stone-200 text-stone-700 flex items-center justify-center text-[11px] shrink-0"><i class="${i.icon}"></i></div>
+<div class="w-8 h-8 rounded-lg bg-stone-200 text-stone-700 flex items-center justify-center text-xs shrink-0"><i class="${i.icon}"></i></div>
 <div class="min-w-0"><p class="font-bold text-stone-900 truncate">${i.name}</p><p class="text-[10px] text-stone-400 truncate">${i.desc || ''}</p></div>
 </div>
-<div class="flex items-center gap-1 shrink-0"><span class="font-bold text-amber-600">$${i.price.toLocaleString()}</span><button onclick="openProductModal(${i.id})" class="bg-stone-200 hover:bg-stone-300 px-2 py-1 rounded-lg text-[10px] font-bold"><i class="fa-solid fa-pen"></i></button></div>
+<div class="flex items-center gap-2 shrink-0"><span class="font-bold text-amber-600">$${i.price.toLocaleString()}</span><button onclick="openProductModal(${i.id})" class="bg-stone-200 hover:bg-stone-300 px-2 py-1.5 rounded-lg text-[10px] font-bold"><i class="fa-solid fa-pen"></i></button></div>
 </div>
-<p class="text-[10px] text-stone-500 mt-1.5 leading-snug">${r}</p>
+<p class="text-[10px] text-stone-500 mt-2 leading-snug">${r}</p>
 </div>`;
 }).join('');
 }
@@ -492,7 +514,7 @@ window.closeProductModal = () => { document.getElementById('product-modal').clas
 
 function renderProductRecipe() {
 const c = document.getElementById('product-modal-recipe');
-if (!inventory.length) { c.innerHTML = '<p class="text-stone-400 text-xs py-2 text-center">No hay ingredientes creados.</p>'; return; }
+if (!inventory.length) { c.innerHTML = '<p class="text-stone-400 text-xs py-2 text-center col-span-full">No hay ingredientes creados.</p>'; return; }
 c.innerHTML = inventory.map(ing => {
 const found = editingProductRecipe.find(r => r.ingredientId === ing.id);
 return `<div class="flex justify-between items-center bg-white p-2 rounded-lg border border-stone-200">
@@ -590,7 +612,7 @@ const [y,m,dd] = selDate.split('-');
 document.getElementById('calendar-day-summary-text').textContent = `${dayOrders.length} pedido${dayOrders.length===1?'':'s'} el ${dd}/${m}/${y}`;
 document.getElementById('calendar-day-summary-total').textContent = `$${dayTot.toLocaleString()}`;
 det.innerHTML = dayOrders.length ? dayOrders.map(o => `
-<div class="flex justify-between items-center bg-stone-50 p-2 rounded-xl border border-stone-100 text-xs">
+<div class="flex justify-between items-center bg-stone-50 p-2.5 rounded-xl border border-stone-100 text-xs">
 <div class="min-w-0 flex-1">
 <div class="flex items-center gap-1.5 flex-wrap"><span class="font-bold text-stone-900">#${o.id} - ${o.customer}</span><span class="text-[10px] text-stone-400">${o.time||''}</span></div>
 <div class="text-[10px] text-stone-400 truncate">${(o.items||[]).map(i=>`${i.qty}x${i.name}`).join(', ')}</div>
@@ -625,15 +647,17 @@ const c = document.getElementById('edit-sale-items');
 if (!editingSale || !editingSale.items.length) { c.innerHTML = '<p class="text-stone-400 text-xs py-2 text-center">Sin productos.</p>'; }
 else {
 c.innerHTML = editingSale.items.map((it, idx) => `
-<div class="flex items-center gap-1.5 bg-stone-50 p-2 rounded-xl border border-stone-100">
-<input type="text" value="${(it.name||'').replace(/"/g,'&quot;')}" oninput="updateSaleItem(${idx},'name',this.value)" class="flex-1 min-w-0 bg-transparent text-xs font-semibold focus:outline-none">
-<div class="flex items-center gap-1 bg-white rounded-lg border border-stone-200 px-1.5">
-<button onclick="adjustSaleQty(${idx},-1)" class="text-stone-500 text-xs font-bold w-4 text-center">-</button>
-<input type="number" value="${it.qty}" oninput="updateSaleItem(${idx},'qty',this.value)" class="w-8 text-center text-xs font-bold bg-transparent focus:outline-none">
-<button onclick="adjustSaleQty(${idx},1)" class="text-stone-500 text-xs font-bold w-4 text-center">+</button>
+<div class="flex flex-col sm:flex-row sm:items-center gap-2 bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+<input type="text" value="${(it.name||'').replace(/"/g,'&quot;')}" oninput="updateSaleItem(${idx},'name',this.value)" class="w-full bg-white sm:bg-transparent px-2 py-1 sm:p-0 rounded border sm:border-0 border-stone-200 text-sm font-semibold focus:outline-none">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-1 bg-white rounded-lg border border-stone-200 px-1.5 py-1">
+<button onclick="adjustSaleQty(${idx},-1)" class="text-stone-500 text-sm font-bold w-5 text-center">-</button>
+<input type="number" value="${it.qty}" oninput="updateSaleItem(${idx},'qty',this.value)" class="w-8 text-center text-sm font-bold bg-transparent focus:outline-none">
+<button onclick="adjustSaleQty(${idx},1)" class="text-stone-500 text-sm font-bold w-5 text-center">+</button>
 </div>
-<div class="flex items-center bg-white rounded-lg border border-stone-200 px-1.5"><span class="text-[10px] text-stone-400">$</span><input type="number" value="${it.price}" oninput="updateSaleItem(${idx},'price',this.value)" class="w-16 text-right text-xs font-bold bg-transparent focus:outline-none"></div>
-<button onclick="removeSaleItem(${idx})" class="text-rose-500 hover:text-rose-700 px-1"><i class="fa-solid fa-trash text-xs"></i></button>
+<div class="flex items-center bg-white rounded-lg border border-stone-200 px-1.5 py-1"><span class="text-[10px] text-stone-400">$</span><input type="number" value="${it.price}" oninput="updateSaleItem(${idx},'price',this.value)" class="w-16 text-right text-sm font-bold bg-transparent focus:outline-none"></div>
+<button onclick="removeSaleItem(${idx})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash"></i></button>
+</div>
 </div>`).join('');
 }
 if (editingSale) document.getElementById('edit-sale-total').textContent = `$${editingSale.items.reduce((s,i)=>s+i.price*i.qty,0).toLocaleString()}`;
