@@ -522,12 +522,12 @@ const recipeIngs = editingProductRecipe.map(r => {
 }).filter(Boolean);
 const availableIngs = inventory.filter(i => !editingProductRecipe.some(r => r.ingredientId === i.id));
 let html = recipeIngs.map(ing => `
-    <div class="flex justify-between items-center bg-white p-2 rounded-lg border border-amber-400 shadow-sm mb-2 transition-all">
+    <div class="flex justify-between items-center bg-white p-2 rounded-lg border border-stone-200 shadow-sm mb-2 transition-all">
         <span class="text-xs font-semibold text-stone-900 truncate">${ing.name}</span>
         <div class="flex items-center gap-2">
             <input type="number" min="1" value="${ing.qty}" onchange="updateRecipeQty(${ing.id},this.value)" class="w-16 text-center text-sm font-bold bg-stone-50 border border-stone-200 rounded-lg py-1 focus:outline-none focus:border-amber-600">
             <span class="text-[10px] text-stone-400 w-6">${ing.unit}</span>
-            <button type="button" onclick="removeRecipeQty(${ing.id})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-xmark text-sm"></i></button>
+            <button type="button" onclick="removeRecipeQty(${ing.id})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash text-xs"></i></button>
         </div>
     </div>
 `).join('');
