@@ -5,7 +5,9 @@ import { doc, getDoc, setDoc, updateDoc, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 const provider = new GoogleAuthProvider();
-
+provider.setCustomParameters({
+  prompt: 'select_account'
+});
 export async function signInWithGoogle() {
     const r = await signInWithPopup(auth, provider);
     return r.user;
@@ -13,6 +15,7 @@ export async function signInWithGoogle() {
 
 export async function logout() {
     await signOut(auth);
+    localStorage.clear();
     window.location.href = "index.html";
 }
 
